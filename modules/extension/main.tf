@@ -12,9 +12,6 @@ locals {
 
   # Prefix für alle Ressourcen
   name_prefix = "mkg-${var.environment}-${var.extension_name}"
-
-  # Handler-Map für einfachen Zugriff
-  handler_map = { for h in var.handlers : h.name => h }
 }
 
 # Lambda Handlers

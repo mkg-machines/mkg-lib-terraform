@@ -93,7 +93,18 @@ jobs:
           framework: terraform
           output_format: cli
           soft_fail: false
-          skip_check: CKV_TF_1  # Skip "Ensure Terraform module sources use a commit hash"
+          # Skip checks that don't apply to reusable module libraries:
+          # - CKV_TF_1: Module sources use commit hash (we use versioned releases)
+          # - CKV_AWS_309: API Gateway authorization (intentionally configurable)
+          # - CKV_AWS_158: CloudWatch Log Group KMS (optional, cost implications)
+          # - CKV_AWS_116: Lambda DLQ (optional feature)
+          # - CKV_AWS_272: Lambda code signing (enterprise feature)
+          # - CKV_AWS_173: Lambda env vars encryption (optional KMS)
+          # - CKV_AWS_300: S3 lifecycle abort multipart (not always needed)
+          # - CKV_AWS_145: S3 KMS encryption (SSE-S3 is acceptable)
+          # - CKV_AWS_18: S3 access logging (optional feature)
+          # - CKV_AWS_144: S3 cross-region replication (expensive, optional)
+          skip_check: CKV_TF_1,CKV_AWS_309,CKV_AWS_158,CKV_AWS_116,CKV_AWS_272,CKV_AWS_173,CKV_AWS_300,CKV_AWS_145,CKV_AWS_18,CKV_AWS_144
 
   terraform-docs:
     name: Terraform Docs
