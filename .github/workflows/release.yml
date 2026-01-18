@@ -28,10 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g semantic-release \
-            @semantic-release/changelog \
-            @semantic-release/git \
-            conventional-changelog-conventionalcommits
+          npm install -g semantic-release conventional-changelog-conventionalcommits
 
       - name: Create semantic-release config
         run: |
@@ -69,13 +66,6 @@ jobs:
                     {"type": "refactor", "section": "Refactoring", "hidden": true}
                   ]
                 }
-              }],
-              ["@semantic-release/changelog", {
-                "changelogFile": "CHANGELOG.md"
-              }],
-              ["@semantic-release/git", {
-                "assets": ["CHANGELOG.md"],
-                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
               }],
               "@semantic-release/github"
             ]
