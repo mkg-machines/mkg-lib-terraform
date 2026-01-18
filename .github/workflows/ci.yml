@@ -70,13 +70,13 @@ jobs:
           tflint_version: ${{ env.TFLINT_VERSION }}
 
       - name: Init TFLint
-        run: tflint --init
+        run: tflint --init --config=.tflint.hcl
 
       - name: Run TFLint
         run: |
           for module in modules/*/; do
             echo "Linting $module"
-            tflint --chdir="$module" --format=compact
+            tflint --chdir="$module" --config="$(pwd)/.tflint.hcl" --format=compact
           done
 
   checkov:
@@ -101,16 +101,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Render terraform-docs
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/lambda,modules/dynamodb,modules/s3,modules/sqs,modules/eventbridge,modules/api-gateway,modules/extension
-          output-file: README.md
-          output-method: inject
-          git-push: false
+      - name: Setup terraform-docs
+        run: |
+          curl -sSLo terraform-docs.tar.gz https://terraform-docs.io/dl/v0.18.0/terraform-docs-v0.18.0-linux-amd64.tar.gz
+          tar -xzf terraform-docs.tar.gz
+          chmod +x terraform-docs
+          sudo mv terraform-docs /usr/local/bin/
+
+      - name: Run terraform-docs
+        run: |
+          for module in modules/*/; do
+            terraform-docs -c .terraform-docs.yml "$module"
+          done
 
       - name: Check for changes
         run: |
